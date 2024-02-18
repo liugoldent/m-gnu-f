@@ -5,7 +5,7 @@ export default {
   props: {
     btnType: {
       type: String,
-      default: 'primary',
+      default: 'primary'
     },
     circleStatus: {
       type: Boolean,
@@ -16,7 +16,7 @@ export default {
       default: () => {}
     }
   },
-  setup(props){
+  setup(props) {
     return {
       props
     }
@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-  <n-button :type="props.btnType" :circle="props.circleStatus" @click="btnFunc">
+  <n-button :type="props.btnType" :circle="props.circleStatus" @click="btnFunc" ghost>
     <template #icon>
       <n-icon><Filter /></n-icon>
     </template>

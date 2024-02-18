@@ -1,29 +1,38 @@
 <template>
   <div class="item">
+    <n-date-picker class="elementMargin" v-model:value="timestamp" type="date" />
     <IconDocumentTableSearch24RegularVue
-      class="btn"
+      class="elementMargin"
       searchType="cross1020"
       @search="search('cross1020')"
       >10-20交叉</IconDocumentTableSearch24RegularVue
     >
+    <slot></slot>
     <n-data-table
       ref="table"
       :columns="columns"
       :data="tableData"
       :pagination="pagination"
       :bordered="true"
+      :row-props="rowProps"
     />
     <ApiErrorModalVue
       :modal-show-status="modalShowStatus"
       @update:modalShowStatus="updateModalShowStatusFunc"
     />
+    <CodeLinkModal
+      :code-info-obj="codeInfoObj"
+      :code-modal-show-status="codeModalShowStatus"
+      @update:codeModalShowStatus="updateCodeModalShowStatusFunc"
+    ></CodeLinkModal>
   </div>
 </template>
 <script>
-import { NDataTable, NSpace, NButton } from 'naive-ui'
+import { NDataTable, NDatePicker } from 'naive-ui'
 import IconDocumentTableSearch24RegularVue from './icons/IconDocumentTableSearch24Regular.vue'
 import ApiErrorModalVue from './ApiErrorModal.vue'
-import { getCurrentInstance, ref, watch, toRefs } from 'vue'
+import CodeLinkModal from './CodeLinkModal.vue'
+import { getCurrentInstance, ref, watch, toRefs, watchEffect } from 'vue'
 
 export default {
   props: {
@@ -31,6 +40,20 @@ export default {
       type: String,
       default: 'bull',
       required: true
+    },
+    filterObj: {
+      type: Object,
+      default: () => {
+        return {
+          bias10HigherThan: 0,
+          bias10LowerThan: 0,
+          bias20HigherThan: 0,
+          bias20LowerThan: 0,
+          closeHigherThan: 0,
+          closeLowerThan: 0,
+          volumeHigherThan: 0
+        }
+      }
     }
   },
   setup(props) {
@@ -42,6 +65,7 @@ export default {
     }
     // table系列
     let tableData = ref([])
+    let tableAllData = ref([])
     const tableRef = ref(null)
     const createColumns = () => {
       return [
@@ -58,12 +82,12 @@ export default {
         {
           key: 'close',
           title: '收盤價',
-          // defaultSortOrder: 'ascend',
           sorter: 'default'
         },
         {
           key: 'volume',
-          title: '成交量'
+          title: '成交量',
+          sorter: 'default'
         },
         {
           key: 'updateDay',
@@ -71,22 +95,36 @@ export default {
         },
         {
           key: 'bias10',
-          title: '10日乖離率'
+          title: '10日乖離率',
+          sorter: 'default'
         },
         {
           key: 'bias20',
-          title: '20日乖離率'
+          title: '20日乖離率',
+          sorter: 'default'
         }
       ]
     }
+    // 搜尋資料
+    let timestamp = ref(new Date().getTime())
+    // 搜尋資料-1：取得日期
+    const getDateStr = function (dateNumber) {
+      const date = new Date(dateNumber)
+      const year = date.getFullYear()
+      const month = ('0' + (date.getMonth() + 1)).slice(-2) // 注意月份需要加1，并且补零
+      const day = ('0' + date.getDate()).slice(-2) // 注意日期需要补零
+      return `${year}-${month}-${day}`
+    }
+    // 搜尋資料-2：主程式
     const search = async function (type) {
-      let day = '2024-02-15'
+      let day = getDateStr(timestamp.value)
       proxy
         .$axios({
           url: `/crawler/goodInfo/${type}/${day}/${props.viewType}`
         })
         .then((res) => {
-          tableData.value = res.data[props.viewType].sort((a,b) => b.close - a.close)
+          tableData.value = res.data[props.viewType].sort((a, b) => b.close - a.close)
+          tableAllData.value = JSON.parse(JSON.stringify(tableData.value))
         })
         .catch((err) => {
           modalShowStatus.value = true
@@ -103,6 +141,51 @@ export default {
     const sortClose = function () {
       tableRef.value.sort('close', 'ascend')
     }
+    // filter更新
+    watchEffect(() => {
+      try {
+        let tempTableAllData = JSON.parse(JSON.stringify(tableAllData.value))
+        let passStatus = function (value) {
+          return value !== null && value !== 0
+        }
+        const filterConditions = {
+          closeHigherThan: 'close',
+          closeLowerThan: 'close',
+          volumeHigherThan: 'volume',
+          bias10HigherThan: 'bias10',
+          bias10LowerThan: 'bias10',
+          bias20HigherThan: 'bias20',
+          bias20LowerThan: 'bias20'
+        }
+        for (const key in filterConditions) {
+          const filterKey = filterConditions[key]
+          const filterValue = props.filterObj[key]
+
+          if (passStatus(filterValue) && key.includes('Higher')) {
+            console.log('1')
+            tempTableAllData = tempTableAllData.filter((item) => item[filterKey] >= filterValue)
+          }
+          if (passStatus(filterValue) && key.includes('Lower')) {
+            console.log('2')
+            tempTableAllData = tempTableAllData.filter((item) => item[filterKey] <= filterValue)
+          }
+        }
+        tableData.value = tempTableAllData
+      } catch (error) {
+        console.log(error)
+      }
+    })
+    // 每列事件
+    let codeModalShowStatus = ref(false)
+    let codeInfoObj = ref({})
+    const handleRowClick = function (row) {
+      codeModalShowStatus.value = true
+      codeInfoObj.value = row
+    }
+    // 關閉code modal
+    const updateCodeModalShowStatusFunc = function () {
+      codeModalShowStatus.value = false
+    }
     return {
       tableData,
       columns: createColumns(), // table的欄位名稱
@@ -113,24 +196,37 @@ export default {
       modalShowStatus, // modal的開啟狀態
       search, // 打api取得資料的function
       table: tableRef,
-      sortClose
+      sortClose,
+      timestamp,
+      rowProps: (row) => {
+        return {
+          style: 'cursor: pointer;',
+          onClick: () => {
+            handleRowClick(row)
+          }
+        }
+      },
+      codeModalShowStatus,
+      updateCodeModalShowStatusFunc,
+      codeInfoObj
     }
   },
   components: {
     NDataTable,
     IconDocumentTableSearch24RegularVue,
     ApiErrorModalVue,
-    NSpace,
-    NButton
+    NDatePicker,
+    CodeLinkModal
   }
 }
 </script>
 <style scoped>
 .item {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
-.btn {
+.elementMargin {
   margin-bottom: 10px;
 }
 </style>
