@@ -97,7 +97,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .cardBtnGroupDisplay {
   display: flex;
   flex-direction: column;
@@ -110,6 +110,3 @@ export default defineComponent({
   }
 }
 </style>
-
-
-

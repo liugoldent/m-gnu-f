@@ -2,8 +2,7 @@
 import { DocumentTableSearch24Regular } from '@vicons/fluent'
 import { NIcon, NButton } from 'naive-ui'
 export default {
-  props: {
-  },
+  props: {},
   components: {
     DocumentTableSearch24Regular,
     NIcon,

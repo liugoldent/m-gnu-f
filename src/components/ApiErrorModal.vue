@@ -1,5 +1,9 @@
 <template>
-  <n-modal v-model:show="props.modalShowStatus" :mask-closable="false" :on-mask-click="updateModalShowStatus">
+  <n-modal
+    v-model:show="props.modalShowStatus"
+    :mask-closable="false"
+    :on-mask-click="updateModalShowStatus"
+  >
     <n-card
       style="width: 600px"
       title="錯誤訊息："
@@ -39,6 +43,3 @@ export default defineComponent({
   }
 })
 </script>
-
-
-

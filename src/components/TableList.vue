@@ -162,11 +162,9 @@ export default {
           const filterValue = props.filterObj[key]
 
           if (passStatus(filterValue) && key.includes('Higher')) {
-            console.log('1')
             tempTableAllData = tempTableAllData.filter((item) => item[filterKey] >= filterValue)
           }
           if (passStatus(filterValue) && key.includes('Lower')) {
-            console.log('2')
             tempTableAllData = tempTableAllData.filter((item) => item[filterKey] <= filterValue)
           }
         }

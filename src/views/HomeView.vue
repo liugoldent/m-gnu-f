@@ -1,5 +1,4 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <main>
@@ -8,7 +7,7 @@
         <div
           class="circle"
           :style="{
-            color: randomNumberBorderColor()
+            color: randomNumberBorderColor(0)
           }"
         >
           MGnu
@@ -22,7 +21,7 @@
             right: randomNumberPx(index),
             bottom: randomNumberPx(index),
             borderWidth: randomNumberBorder(),
-            borderColor: randomNumberBorderColor()
+            borderColor: randomNumberBorderColor(index)
           }"
           class="circleMore"
         ></div>
@@ -34,6 +33,7 @@
 import colors from '../assets/color.js'
 export default {
   setup() {
+    let baseNumber = Math.floor(Math.random() * 10)
     // 位移寬度
     let randomNumberPx = function (index) {
       let number = Math.random()
@@ -48,14 +48,9 @@ export default {
       return `${Math.random() * (5 - 1) + 1}px`
     }
     // border 顏色
-    let randomNumberBorderColor = function () {
-      let borderIndex = Math.floor(Math.random() * 50)
-      if (colors[borderIndex]) {
-        let values = Object.values(colors[borderIndex])
-        console.log(values)
-        return values[0]
-      }
-      return 'black'
+    let randomNumberBorderColor = function (index) {
+      let values = Object.values(colors[baseNumber * 10 + index])
+      return values[0]
     }
     return {
       randomNumberPx,

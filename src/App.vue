@@ -1,13 +1,34 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { darkTheme, NButton, NIcon, NSpace, NConfigProvider } from 'naive-ui'
 import { DarkModeRound, LightModeOutlined } from '@vicons/material'
 export default defineComponent({
   setup() {
+    onMounted(() => {
+      const value = localStorage.getItem('mGnuDarkMode')
+      if (value === 'mGnuWebLight') {
+        toLightMode()
+      }
+      if (value === 'mGnuWebDark') {
+        toDarkMode()
+      }
+    })
+    let theme = ref(null)
+    // 改變darkMode or LightMode的function
+    const toDarkMode = function () {
+      localStorage.setItem('mGnuDarkMode', 'mGnuWebDark')
+      theme.value = darkTheme
+    }
+    const toLightMode = function () {
+      localStorage.setItem('mGnuDarkMode', 'mGnuWebLight')
+      theme.value = null
+    }
     return {
       darkTheme,
-      theme: ref(null)
+      theme,
+      toDarkMode,
+      toLightMode
     }
   },
   components: {
@@ -22,7 +43,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div :style="{background: theme === null ? 'white' : 'black'}">
+  <div :style="{ background: theme === null ? 'white' : 'black' }">
     <header>
       <div class="wrapper">
         <nav>
@@ -34,10 +55,10 @@ export default defineComponent({
     </header>
     <n-config-provider :theme="theme" class="nConfigProvider">
       <n-space class="nSpacePosition">
-        <n-button v-if="theme === null" @click="theme = darkTheme"
+        <n-button v-if="theme === null" @click="toDarkMode"
           ><n-icon><DarkModeRound /></n-icon
         ></n-button>
-        <n-button v-else @click="theme = null"
+        <n-button v-else @click="toLightMode"
           ><n-icon><LightModeOutlined /></n-icon
         ></n-button>
       </n-space>
@@ -47,7 +68,6 @@ export default defineComponent({
 </template>
 
 <style scoped>
-
 .nConfigProvider {
   width: 100%;
   display: flex;
@@ -90,7 +110,6 @@ nav a {
 nav a:first-of-type {
   border: 0;
 }
-
 
 .nSpacePosition {
   position: fixed;

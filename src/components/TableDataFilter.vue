@@ -1,7 +1,7 @@
 <template>
   <n-drawer
     v-model:show="props.drawerActive"
-    :width="502"
+    :width="300"
     :placement="placement"
     :on-update:show="() => {}"
     :on-mask-click="onMaskClick"
@@ -58,7 +58,7 @@
           />
         </n-form-item>
       </n-form>
-      <template #footer >
+      <template #footer>
         <n-button class="button-margin" @click="resetForm">重設</n-button>
         <n-button class="button-margin" @click="enterToFilter">確認</n-button>
       </template>
