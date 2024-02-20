@@ -1,12 +1,20 @@
 <template>
   <div class="item">
     <n-date-picker class="elementMargin" v-model:value="timestamp" type="date" />
-    <IconDocumentTableSearch24RegularVue
-      class="elementMargin"
-      searchType="cross1020"
-      @search="search('cross1020')"
-      >10-20交叉</IconDocumentTableSearch24RegularVue
-    >
+    <div class="searchTypeClass">
+      <IconDocumentTableSearch24RegularVue
+        class="elementMargin"
+        searchType="cross1020"
+        @search="search('cross1020')"
+        >10-20交叉</IconDocumentTableSearch24RegularVue
+      >
+      <IconDocumentTableSearch24RegularVue
+        class="elementMargin"
+        searchType="cross0520"
+        @search="search('cross0520')"
+        >05-20交叉</IconDocumentTableSearch24RegularVue
+      >
+    </div>
     <slot></slot>
     <n-data-table
       ref="table"
@@ -218,7 +226,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .item {
   width: 100%;
   display: flex;
@@ -226,5 +234,15 @@ export default {
 }
 .elementMargin {
   margin-bottom: 10px;
+}
+.searchTypeClass {
+  display: flex;
+  > .n-button {
+    flex: 1;
+    margin-right: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
 </style>
