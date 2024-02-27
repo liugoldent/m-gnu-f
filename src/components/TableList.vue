@@ -1,6 +1,22 @@
 <template>
   <div class="item">
-    <n-date-picker class="elementMargin" v-model:value="timestamp" type="date" />
+    <div class="itemCheckBox">
+      <n-checkbox v-model:checked="listType" checked-value="list"> 單日列表 </n-checkbox>
+      <n-checkbox v-model:checked="listType" checked-value="difference"> 兩日交集 </n-checkbox>
+    </div>
+    <n-date-picker
+      v-if="listType === 'list'"
+      class="elementMargin"
+      v-model:value="timestamp"
+      type="date"
+    />
+    <n-date-picker
+      v-else
+      class="elementMargin"
+      v-model:value="dateRange"
+      type="daterange"
+      clearable
+    />
     <div class="searchTypeClass">
       <IconDocumentTableSearch24RegularVue
         class="elementMargin"
@@ -14,6 +30,12 @@
         @search="search('cross0520')"
         >05-20交叉</IconDocumentTableSearch24RegularVue
       >
+      <IconDocumentTableSearch24RegularVue
+        class="elementMargin"
+        searchType="cross051020"
+        @search="search('cross051020')"
+        >05-10-20交叉</IconDocumentTableSearch24RegularVue
+      >
     </div>
     <slot></slot>
     <n-data-table
@@ -24,6 +46,7 @@
       :bordered="true"
       :row-props="rowProps"
     />
+
     <ApiErrorModalVue
       :modal-show-status="modalShowStatus"
       @update:modalShowStatus="updateModalShowStatusFunc"
@@ -36,12 +59,12 @@
   </div>
 </template>
 <script>
-import { NDataTable, NDatePicker } from 'naive-ui'
+import { NDataTable, NDatePicker, NCheckbox } from 'naive-ui'
 import IconDocumentTableSearch24RegularVue from './icons/IconDocumentTableSearch24Regular.vue'
 import ApiErrorModalVue from './ApiErrorModal.vue'
 import CodeLinkModal from './CodeLinkModal.vue'
-import { getCurrentInstance, ref, watch, toRefs, watchEffect } from 'vue'
-
+import { getCurrentInstance, ref, watch, toRefs, watchEffect, onMounted } from 'vue'
+import { getPreviousDayTimestamp, getPreviousTwoDays } from '../assets/date'
 export default {
   props: {
     viewType: {
@@ -64,6 +87,7 @@ export default {
       }
     }
   },
+
   setup(props) {
     const { proxy } = getCurrentInstance()
     // modal系列
@@ -114,7 +138,8 @@ export default {
       ]
     }
     // 搜尋資料
-    let timestamp = ref(new Date().getTime())
+    let listType = ref('list')
+    let timestamp = ref(getPreviousDayTimestamp())
     // 搜尋資料-1：取得日期
     const getDateStr = function (dateNumber) {
       const date = new Date(dateNumber)
@@ -123,22 +148,49 @@ export default {
       const day = ('0' + date.getDate()).slice(-2) // 注意日期需要补零
       return `${year}-${month}-${day}`
     }
+    // 搜尋資料：先決定是哪種type來丟到後端
+    const decideApiDetail = function () {
+      let obj = {}
+      if (listType.value === 'list') {
+        obj['data'] = {
+          day1: getDateStr(timestamp.value)
+        }
+      }
+      if (listType.value === 'difference') {
+        obj['data'] = {
+          day1: getDateStr(dateRange.value[0]),
+          day2: getDateStr(dateRange.value[1])
+        }
+      }
+      return obj
+    }
     // 搜尋資料-2：主程式
-    const search = async function (type) {
-      let day = getDateStr(timestamp.value)
-      proxy
-        .$axios({
-          url: `/crawler/goodInfo/${type}/${day}/${props.viewType}`
+    const search = async function (crossType) {
+      const apiDetail = decideApiDetail()
+      console.log(apiDetail)
+      proxy.$axios
+        .post(`/crawler/goodInfo/${crossType}/${listType.value}/${props.viewType}`, {
+          day: apiDetail['data']
         })
         .then((res) => {
-          tableData.value = res.data[props.viewType].sort((a, b) => b.close - a.close)
-          tableAllData.value = JSON.parse(JSON.stringify(tableData.value))
+          if (res.data[props.viewType].length > 0) {
+            tableData.value = res.data[props.viewType].sort((a, b) => b.close - a.close)
+            tableAllData.value = JSON.parse(JSON.stringify(tableData.value))
+          } else {
+            tableData.value = []
+            tableAllData.value = []
+          }
         })
         .catch((err) => {
           modalShowStatus.value = true
+          tableData.value = []
+          tableAllData.value = []
           console.log(err)
         })
     }
+    // 搜尋資料-3：交集的日期設定
+    let defaultDate = getPreviousTwoDays()
+    let dateRange = ref([defaultDate.previousTwoDays, defaultDate.previousDay]) // 多日差集的時間列表
     // 清空tableData
     const { viewType } = toRefs(props)
     watch(viewType, () => {
@@ -214,7 +266,9 @@ export default {
       },
       codeModalShowStatus,
       updateCodeModalShowStatusFunc,
-      codeInfoObj
+      codeInfoObj,
+      listType, // 單日列表 or 多日差集的checkbox value
+      dateRange // 多日差集的時間列表
     }
   },
   components: {
@@ -222,7 +276,8 @@ export default {
     IconDocumentTableSearch24RegularVue,
     ApiErrorModalVue,
     NDatePicker,
-    CodeLinkModal
+    CodeLinkModal,
+    NCheckbox
   }
 }
 </script>
@@ -231,6 +286,9 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+.itemCheckBox {
+  margin-bottom: 10px;
 }
 .elementMargin {
   margin-bottom: 10px;

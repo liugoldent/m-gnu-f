@@ -10,20 +10,19 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/bull',
-      name: 'bull',
-      props: {
-        componentType: 'bull'
+      path: '/cross/:marketType',
+      name: 'marketType',
+      props: (route) => {
+        console.log(route)
+        return {
+          componentType: route.params.marketType
+        }
       },
       component: () => import('../views/ListView.vue')
     },
     {
-      path: '/bear',
-      name: 'bear',
-      props: {
-        componentType: 'bear'
-      },
-      component: () => import('../views/ListView.vue')
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
     }
   ]
 })
