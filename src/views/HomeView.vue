@@ -98,4 +98,10 @@ export default {
   font-weight: bold;
   /* animation: gradient 5s linear infinite; */
 }
+@media screen and (max-width: 300px) {
+  .circle, .circleMore {
+    width: 100px;
+    height: 100px;
+  }
+}
 </style>

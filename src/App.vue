@@ -39,7 +39,6 @@ export default defineComponent({
     DarkModeRound,
     LightModeOutlined,
     NConfigProvider,
-    NSwitch
   }
 })
 </script>
@@ -47,7 +46,7 @@ export default defineComponent({
 <template>
   <div :style="{ background: theme === null ? 'white' : 'black' }">
     <header>
-      <div>
+      <div style="overflow: auto">
         <nav>
           <RouterLink to="/" style="color: gray">Home</RouterLink>
           <RouterLink to="/cross/bull" style="color: gray">Bull</RouterLink>
