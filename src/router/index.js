@@ -20,6 +20,15 @@ const router = createRouter({
       component: () => import('../views/ListView.vue')
     },
     {
+      path: '/scharts',
+      name: 'scharts',
+      props: () => {
+        return {
+        }
+      },
+      component: () => import('../views/SChartsView.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     }

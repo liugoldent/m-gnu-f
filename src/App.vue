@@ -52,6 +52,7 @@ export default defineComponent({
           <RouterLink to="/" style="color: gray">Home</RouterLink>
           <RouterLink to="/cross/bull" style="color: gray">Bull</RouterLink>
           <RouterLink to="/cross/bear" style="color: gray">Bear</RouterLink>
+          <RouterLink to="/scharts" style="color: gray">Charts</RouterLink>
         </nav>
       </div>
     </header>
