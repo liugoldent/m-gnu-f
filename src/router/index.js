@@ -13,7 +13,6 @@ const router = createRouter({
       path: '/cross/:marketType',
       name: 'marketType',
       props: (route) => {
-        console.log(route)
         return {
           componentType: route.params.marketType
         }

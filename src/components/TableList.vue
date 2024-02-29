@@ -167,7 +167,6 @@ export default {
     // 搜尋資料-2：主程式
     const search = async function (crossType) {
       const apiDetail = decideApiDetail()
-      console.log(apiDetail)
       proxy.$axios
         .post(`/crawler/goodInfo/${crossType}/${listType.value}/${props.viewType}`, {
           day: apiDetail['data']
@@ -295,6 +294,7 @@ export default {
 }
 .searchTypeClass {
   display: flex;
+  overflow: auto;
   > .n-button {
     flex: 1;
     margin-right: 10px;
