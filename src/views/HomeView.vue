@@ -30,7 +30,7 @@
   </main>
 </template>
 <script>
-import colors from '../assets/color.js'
+import colors from '@/assets/color.js'
 export default {
   setup() {
     let baseNumber = Math.floor(Math.random() * 10)

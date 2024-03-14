@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +17,7 @@ const router = createRouter({
           componentType: route.params.marketType
         }
       },
-      component: () => import('../views/ListView.vue')
+      component: () => import('@/views/ListView.vue')
     },
     {
       path: '/scharts',
@@ -26,7 +26,7 @@ const router = createRouter({
         return {
         }
       },
-      component: () => import('../views/SChartsView.vue')
+      component: () => import('@/views/SChartsView.vue')
     },
     {
       path: '/:pathMatch(.*)*',

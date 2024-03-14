@@ -20,9 +20,9 @@
 
 <script>
 import { ref, watchEffect, reactive } from 'vue'
-import IconFilter from '../components/icons/IconFilter.vue'
-import TableList from '../components/TableList.vue'
-import TableDatFilter from '../components/TableDataFilter.vue'
+import IconFilter from '@/components/icons/IconFilter.vue'
+import TableList from '@/components/TableList.vue'
+import TableDatFilter from '@/components/TableDataFilter.vue'
 export default {
   props: {
     componentType: {

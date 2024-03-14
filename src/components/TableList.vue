@@ -64,7 +64,7 @@ import IconDocumentTableSearch24RegularVue from './icons/IconDocumentTableSearch
 import ApiErrorModalVue from './ApiErrorModal.vue'
 import CodeLinkModal from './CodeLinkModal.vue'
 import { getCurrentInstance, ref, watch, toRefs, watchEffect, onMounted } from 'vue'
-import { getPreviousDayTimestamp, getPreviousTwoDays } from '../assets/date'
+import { getPreviousDayTimestamp, getPreviousTwoDays } from '@/assets/date'
 export default {
   props: {
     viewType: {
