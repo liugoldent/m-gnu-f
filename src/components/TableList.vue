@@ -30,12 +30,12 @@
         @search="search('cross0520')"
         >05-20交叉</IconDocumentTableSearch24RegularVue
       >
-      <IconDocumentTableSearch24RegularVue
+      <!-- <IconDocumentTableSearch24RegularVue
         class="elementMargin"
         searchType="cross051020"
         @search="search('cross051020')"
         >05-10-20交叉</IconDocumentTableSearch24RegularVue
-      >
+      > -->
     </div>
     <slot></slot>
     <n-data-table
